@@ -1,0 +1,10 @@
+Timestamp,Table,"Record ID",User,Action,Query
+"2026-05-07 13:29:09",sc_user,Multiple/Where,Guest/System,UPDATE,"UPDATE sc_user SET user_id = ? WHERE id = ?"
+"2026-05-07 13:29:09",sc_user,1,Guest/System,REGISTER,"INSERT INTO sc_user (loginer_name,user_mobile,username,password,created_date_time,admin) VALUES (?,?,?,?,?,?)"
+"2026-05-07 13:34:04",sc_user,Multiple/Where,Guest/System,UPDATE,"UPDATE sc_user SET user_id = ? WHERE id = ?"
+"2026-05-07 13:34:04",sc_user,1,Guest/System,REGISTER,"INSERT INTO sc_user (loginer_name,user_mobile,username,password,created_date_time,admin) VALUES (?,?,?,?,?,?)"
+"2026-05-07 13:36:34",sc_user,Multiple/Where,Guest/System,UPDATE,"UPDATE sc_user SET user_id = ? WHERE id = ?"
+"2026-05-07 13:36:34",sc_user,1,Guest/System,REGISTER,"INSERT INTO sc_user (loginer_name,user_mobile,username,password,created_date_time,updated_date_time,admin) VALUES (?,?,?,?,?,?,?)"
+"2026-05-07 14:30:14",sc_user,Multiple/Where,Guest/System,UPDATE,"UPDATE sc_user SET user_id = ? WHERE id = ?"
+"2026-05-07 14:30:14",sc_user,1,Guest/System,REGISTER,"INSERT INTO sc_user (loginer_name,user_mobile,username,password,created_date_time,updated_date_time,admin) VALUES (?,?,?,?,?,?,?)"
+"2026-05-07 14:30:44",sc_login,1,Lakshmi,LOGIN,"INSERT INTO sc_login (login_date_time,user_id) VALUES (?,?)"
