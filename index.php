@@ -70,7 +70,7 @@
                     </div>
                     <div class="form-group">
                         <label for="reg-mobile">Mobile Number</label>
-                        <input type="tel" id="reg-mobile" name="mobile" class="form-input" placeholder="10-digit number" required>
+                        <input type="tel" id="reg-mobile" name="mobile" class="form-input" placeholder="10-digit number" required maxlength='10'>
                         <span class="error-msg" id="error-mobile"></span>
                     </div>
                     <div class="form-group">

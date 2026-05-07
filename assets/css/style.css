@@ -326,6 +326,18 @@ td {
     vertical-align: middle;
 }
 
+/* Prevent names and dates from splitting */
+td:nth-child(2), td:nth-child(3) {
+    white-space: nowrap;
+}
+
+/* Give enough room for columns */
+th:nth-child(1), td:nth-child(1) { width: 15%; } /* Patient */
+th:nth-child(2), td:nth-child(2) { width: 20%; } /* Doctor */
+th:nth-child(3), td:nth-child(3) { width: 25%; } /* Date & Time */
+th:nth-child(4), td:nth-child(4) { width: 15%; } /* Status */
+th:nth-child(5), td:nth-child(5) { width: 25%; } /* Actions */
+
 tr:last-child td {
     border-bottom: none;
 }
@@ -339,6 +351,7 @@ td:last-child {
     gap: 8px;
     flex-wrap: wrap;
     align-items: center;
+    min-height: 80px; /* Ensure enough height for flex-wrapped buttons */
 }
 
 .status-badge {

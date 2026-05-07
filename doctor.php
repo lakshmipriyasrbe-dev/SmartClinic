@@ -68,7 +68,7 @@
                         </div>
                         <div class="form-group">
                             <label for="doc-contact">Contact Number</label>
-                            <input type="tel" id="doc-contact" name="contact" class="form-input" placeholder="1234567890" value="<?php echo $contact; ?>" onkeypress="return allowNumbersOnly(event)" required>
+                            <input type="tel" maxlength="10" id="doc-contact" name="contact" class="form-input" placeholder="1234567890" value="<?php echo $contact; ?>" onkeypress="return allowNumbersOnly(event)" required>
                             <span id="error-contact" class="error-msg"></span>
                         </div>
                         
