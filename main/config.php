@@ -32,5 +32,14 @@
         public function getConnection() {
             return $this->conn;
         }
+
+        public function getDbConfig() {
+            return [
+                'host' => $this->host,
+                'dbname' => $this->dbname,
+                'user' => $this->username,
+                'pass' => $this->password
+            ];
+        }
     }
 ?>

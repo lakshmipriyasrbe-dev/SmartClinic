@@ -1,2 +1,2 @@
 # SmartClinic
-for base code check
+for database import check sql file inside of sql folder.

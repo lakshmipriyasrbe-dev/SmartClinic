@@ -78,5 +78,41 @@
 			}
 			return $result;
 		}
+
+		public function valid_future_date_time($date, $time, $field_name) {
+			$result = "";
+			if (empty($date)) {
+				return "Enter the " . $field_name;
+			}
+			
+			// Convert DD-MM-YYYY to Y-m-d
+			$formatted_date = date('Y-m-d', strtotime($date));
+			$current_date = date('Y-m-d');
+			$current_time = date('H:i');
+			
+			if ($formatted_date < $current_date) {
+				$result = $field_name . " cannot be in the past";
+			} else if ($formatted_date == $current_date) {
+				if ($time <= $current_time) {
+					$result = "Selected time must be in the future";
+				}
+			}
+			return $result;
+		}
+
+		public function valid_datetime($datetime, $field_name) {
+			$result = "";
+			if (empty($datetime)) {
+				return "Select the " . $field_name;
+			}
+			
+			$selected_timestamp = strtotime($datetime);
+			$current_timestamp = time();
+			
+			if ($selected_timestamp < $current_timestamp) {
+				$result = $field_name . " cannot be in the past";
+			}
+			return $result;
+		}
 	}
 ?>

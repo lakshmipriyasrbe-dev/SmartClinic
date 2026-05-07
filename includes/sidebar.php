@@ -28,7 +28,7 @@
             </a>
         </li>
         <li class="nav-item" style="margin-top: auto; padding-top: 20px;">
-            <a href="index.php" class="nav-link">
+            <a href="logout.php" class="nav-link">
                 <i data-lucide="log-out"></i>
                 <span>Logout</span>
             </a>

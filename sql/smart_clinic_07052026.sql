@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 07, 2026 at 07:47 AM
+-- Generation Time: May 07, 2026 at 01:52 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.1.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -36,10 +36,12 @@ CREATE TABLE `sc_appointment` (
   `consultan_name` mediumtext DEFAULT NULL,
   `consultant_fees` int(11) NOT NULL DEFAULT 0,
   `appointment_date` datetime DEFAULT NULL,
+  `appointment_time` time DEFAULT NULL,
   `patient_name` mediumtext DEFAULT NULL,
   `patient_number` mediumtext DEFAULT NULL,
   `description` mediumtext DEFAULT NULL,
-  `deleted` int(11) NOT NULL DEFAULT 0
+  `deleted` int(11) NOT NULL DEFAULT 0,
+  `status` mediumtext DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
@@ -50,6 +52,7 @@ CREATE TABLE `sc_appointment` (
 
 CREATE TABLE `sc_company` (
   `id` int(11) NOT NULL,
+  `company_id` mediumtext DEFAULT NULL,
   `company_name` mediumtext DEFAULT NULL,
   `company_email` mediumtext DEFAULT NULL,
   `company_address` mediumtext DEFAULT NULL,
@@ -98,13 +101,13 @@ CREATE TABLE `sc_login` (
 
 CREATE TABLE `sc_user` (
   `id` int(11) NOT NULL,
-  `created_date_time` int(11) DEFAULT NULL,
-  `updated_date_time` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `loginer_name` int(11) DEFAULT NULL,
-  `user_mobile` int(11) DEFAULT NULL,
-  `username` int(11) DEFAULT NULL,
-  `password` int(11) DEFAULT NULL,
+  `created_date_time` datetime DEFAULT NULL,
+  `updated_date_time` datetime DEFAULT NULL,
+  `user_id` mediumtext DEFAULT NULL,
+  `loginer_name` mediumtext DEFAULT NULL,
+  `user_mobile` mediumtext DEFAULT NULL,
+  `username` mediumtext DEFAULT NULL,
+  `password` mediumtext DEFAULT NULL,
   `admin` int(11) NOT NULL DEFAULT 0,
   `deleted` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
@@ -114,9 +117,21 @@ CREATE TABLE `sc_user` (
 --
 
 --
+-- Indexes for table `sc_appointment`
+--
+ALTER TABLE `sc_appointment`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `sc_company`
 --
 ALTER TABLE `sc_company`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `sc_consultant`
+--
+ALTER TABLE `sc_consultant`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -136,9 +151,21 @@ ALTER TABLE `sc_user`
 --
 
 --
+-- AUTO_INCREMENT for table `sc_appointment`
+--
+ALTER TABLE `sc_appointment`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `sc_company`
 --
 ALTER TABLE `sc_company`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `sc_consultant`
+--
+ALTER TABLE `sc_consultant`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

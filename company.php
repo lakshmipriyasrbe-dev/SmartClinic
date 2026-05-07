@@ -1,8 +1,25 @@
 <?php
-    session_start();
+    include_once("common_file.php");
+
     if (!isset($_SESSION['user_id'])) {
         header('Location: index.php');
         exit;
+    }
+
+    $edit_id = $_GET['company_id'] ?? '';
+    $company_name = "";
+    $company_email = "";
+    $company_address = "";
+
+    if (!empty($edit_id)) {
+        $stmt = $con->prepare("SELECT * FROM " . $GLOBALS['company_table'] . " WHERE company_id = ? AND deleted = 0");
+        $stmt->execute([$edit_id]);
+        $row = $stmt->fetch();
+        if ($row) {
+            $company_name = $row['company_name'];
+            $company_email = $row['company_email'];
+            $company_address = $row['company_address'];
+        }
     }
 ?>
 <!DOCTYPE html>
@@ -26,24 +43,52 @@
 
             <div class="grid-container" style="grid-template-columns: 1fr 2fr;">
                 <div class="content-card">
+                    <?php
+                        $max_company = 1;
+                        $stmt_count = $con->prepare("SELECT COUNT(*) FROM " . $GLOBALS['company_table'] . " WHERE deleted = 0");
+                        $stmt_count->execute();
+                        $company_count = $stmt_count->fetchColumn();
+                        
+                        $can_show_form = (empty($edit_id) && $company_count < $max_company) || !empty($edit_id);
+                    ?>
+                    
                     <div class="content-card-header">
-                        <h2>Register Hospital</h2>
+                        <h2><?php echo empty($edit_id) ? "Register Hospital" : "Update Hospital"; ?></h2>
                     </div>
-                    <form action="company.php" method="POST">
-                        <div class="form-group">
-                            <label for="comp-name">Hospital Name</label>
-                            <input type="text" id="comp-name" name="company_name" class="form-input" placeholder="Main Clinic Branch" required>
+
+                    <?php if ($can_show_form): ?>
+                        <form name="company_form" id="company_form" onsubmit="event.preventDefault(); formSubmit('company_form', 'company_action.php', 'company.php', 'company');">
+                            <input type="hidden" name="view_company_id" value="<?php echo $edit_id; ?>">
+                            
+                            <div class="form-group">
+                                <label for="comp-name">Hospital Name</label>
+                                <input type="text" id="comp-name" name="company_name" class="form-input" placeholder="Main Clinic Branch" value="<?php echo $company_name; ?>" onkeypress="return allowLettersOnly(event)" required>
+                                <span id="error-company_name" class="error-msg"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="comp-address">Address</label>
+                                <textarea id="comp-address" name="address" class="form-input" style="height: 100px; resize: none;" placeholder="123 Medical Plaza, New York, NY" required><?php echo $company_address; ?></textarea>
+                                <span id="error-address" class="error-msg"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="comp-email">Email Address</label>
+                                <input type="email" id="comp-email" name="email" class="form-input" placeholder="contact@smartclinic.com" value="<?php echo $company_email; ?>" required>
+                                <span id="error-email" class="error-msg"></span>
+                            </div>
+                            
+                            <div id="success-msg" class="success-msg hidden"></div>
+                            
+                            <button type="submit" class="btn-primary"><?php echo empty($edit_id) ? "Save Details" : "Update Details"; ?></button>
+                            <?php if (!empty($edit_id)): ?>
+                                <a href="company.php" class="btn-secondary" style="text-decoration: none; display: inline-block; padding: 10px 20px; border-radius: 6px; background: #e2e8f0; color: #475569; margin-top: 10px; width: 100%; text-align: center;">Cancel</a>
+                            <?php endif; ?>
+                        </form>
+                    <?php else: ?>
+                        <div style="padding: 20px; text-align: center; background: #f8fafc; border-radius: 12px; border: 1px dashed var(--border-color);">
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">You have reached the maximum limit of **<?php echo $max_company; ?>** hospital registration.</p>
+                            <p style="margin-top: 10px; font-size: 0.85rem;">To change details, please use the **Edit** option in the listing.</p>
                         </div>
-                        <div class="form-group">
-                            <label for="comp-address">Address</label>
-                            <textarea id="comp-address" name="address" class="form-input" style="height: 100px; resize: none;" placeholder="123 Medical Plaza, New York, NY" required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="comp-email">Email Address</label>
-                            <input type="email" id="comp-email" name="email" class="form-input" placeholder="contact@smartclinic.com" required>
-                        </div>
-                        <button type="submit" class="btn-primary">Save Details</button>
-                    </form>
+                    <?php endif; ?>
                 </div>
 
                 <div class="content-card">
@@ -62,15 +107,26 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>SmartClinic Main</td>
-                                    <td>info@smartclinic.com</td>
-                                    <td>Downtown Medical Center</td>
-                                    <td>
-                                        <button class="status-badge status-attended" style="border:none; cursor:pointer;">Edit</button>
-                                    </td>
-                                </tr>
+                                <?php
+                                    $stmt = $con->prepare("SELECT * FROM " . $GLOBALS['company_table'] . " WHERE deleted = 0 ORDER BY id DESC");
+                                    $stmt->execute();
+                                    $companies = $stmt->fetchAll();
+                                    if ($companies) {
+                                        foreach ($companies as $comp) {
+                                            echo "<tr>";
+                                            echo "<td>" . $comp['id'] . "</td>";
+                                            echo "<td>" . $comp['company_name'] . "</td>";
+                                            echo "<td>" . $comp['company_email'] . "</td>";
+                                            echo "<td>" . $comp['company_address'] . "</td>";
+                                            echo "<td>
+                                                    <a href='company.php?company_id=" . $comp['company_id'] . "' class='status-badge status-attended' style='border:none; cursor:pointer; text-decoration:none;'>Edit</a>
+                                                  </td>";
+                                            echo "</tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='5' style='text-align:center;'>No records found</td></tr>";
+                                    }
+                                ?>
                             </tbody>
                         </table>
                     </div>
@@ -78,5 +134,8 @@
             </div>
         </main>
     </div>
+    
+    <script src="main/js/script.js"></script>
+    <script src="main/js/keyboard_control.js"></script>
 </body>
 </html>

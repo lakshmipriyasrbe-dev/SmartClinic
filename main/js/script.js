@@ -1,26 +1,31 @@
-function formSubmit(form_name, from_page, to_page) {
+function formSubmit(form_name, from_page, to_page, page_name) {
     const form = document.forms[form_name];
     if (!form) {
         console.error("Form not found:", form_name);
         return;
     }
 
-    // Clear previous errors and success messages
+    // Clear previous errors
     const errorSpans = form.querySelectorAll('.error-msg');
     errorSpans.forEach(span => span.innerText = '');
     
-    const successDiv = form.querySelector('.success-msg');
+    const successDiv = form.querySelector('.success-msg') || document.getElementById('success-msg');
     if (successDiv) {
         successDiv.innerText = '';
         successDiv.classList.add('hidden');
     }
 
     const formData = new FormData(form);
+    if (page_name) {
+        formData.append('page_name', page_name);
+    }
 
     const submitBtn = form.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.innerText;
-    submitBtn.disabled = true;
-    submitBtn.innerText = 'Processing...';
+    const originalBtnText = submitBtn ? submitBtn.innerText : 'Save';
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Processing...';
+    }
 
     fetch(from_page, {
         method: 'POST',
@@ -32,35 +37,48 @@ function formSubmit(form_name, from_page, to_page) {
             if (successDiv) {
                 successDiv.innerText = data.message;
                 successDiv.classList.remove('hidden');
+                successDiv.style.background = 'rgba(16, 185, 129, 0.1)';
+                successDiv.style.color = '#10b981';
             }
             
-            // Redirect after a short delay to show success message
             setTimeout(() => {
                 window.location.href = to_page;
-            }, 1500);
+            }, 1000);
         } else {
             if (data.errors && Object.keys(data.errors).length > 0) {
-                // Show field-specific errors
                 for (const field in data.errors) {
                     const errorSpan = document.getElementById('error-' + field);
                     if (errorSpan) {
                         errorSpan.innerText = data.errors[field];
+                        errorSpan.style.color = '#ef4444';
                     }
                 }
-            } else if (data.message) {
-                // General error message
-                alert(data.message);
+            } 
+            
+            if (data.message) {
+                if (successDiv) {
+                    successDiv.innerText = data.message;
+                    successDiv.classList.remove('hidden');
+                    successDiv.style.background = 'rgba(239, 68, 68, 0.1)';
+                    successDiv.style.color = '#ef4444';
+                } else {
+                    alert(data.message);
+                }
             }
             
-            submitBtn.disabled = false;
-            submitBtn.innerText = originalBtnText;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalBtnText;
+            }
         }
     })
     .catch(error => {
         console.error('Error:', error);
         alert('An unexpected error occurred.');
-        submitBtn.disabled = false;
-        submitBtn.innerText = originalBtnText;
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = originalBtnText;
+        }
     });
 }
 
