@@ -8,19 +8,19 @@
 
     // Calculations
     // 1. Expected Revenue (Sum of fees for confirmed appointments)
-    $stmt = $con->prepare("SELECT SUM(consultant_fees) as total FROM " . $GLOBALS['appointment_table'] . " WHERE deleted = 0 AND (status = 'Confirmed' OR status IS NULL)");
-    $stmt->execute();
-    $expected_revenue = $stmt->fetch()['total'] ?? 0;
+    // 1. Expected Revenue (Sum of fees for confirmed appointments)
+    $rev_query = "SELECT SUM(consultant_fees) as total FROM " . $GLOBALS['appointment_table'] . " WHERE deleted = ? AND (status = ? OR status IS NULL)";
+    $rev_res = $bf->getQueryRecords($rev_query, [0, 'Confirmed']);
+    $expected_revenue = $rev_res[0]['total'] ?? 0;
 
     // 2. Confirmed Appointments Count
-    $stmt = $con->prepare("SELECT COUNT(*) as count FROM " . $GLOBALS['appointment_table'] . " WHERE deleted = 0 AND (status = 'Confirmed' OR status IS NULL)");
-    $stmt->execute();
-    $confirmed_count = $stmt->fetch()['count'] ?? 0;
+    $conf_query = "SELECT COUNT(*) as count FROM " . $GLOBALS['appointment_table'] . " WHERE deleted = ? AND (status = ? OR status IS NULL)";
+    $conf_res = $bf->getQueryRecords($conf_query, [0, 'Confirmed']);
+    $confirmed_count = $conf_res[0]['count'] ?? 0;
 
     // 3. Active Doctors Count
-    $stmt = $con->prepare("SELECT COUNT(*) as count FROM " . $GLOBALS['consultant_table'] . " WHERE deleted = 0");
-    $stmt->execute();
-    $doctors_count = $stmt->fetch()['count'] ?? 0;
+    $doctors_all = $bf->getTableRecords($GLOBALS['consultant_table']);
+    $doctors_count = count($doctors_all);
 
     // Fetch user info for initials
     $user_name = $_SESSION['user_name'] ?? 'Admin';
@@ -88,9 +88,8 @@
                         <tbody>
                             <?php
                                 $now = date('Y-m-d H:i:s');
-                                $stmt = $con->prepare("SELECT * FROM " . $GLOBALS['appointment_table'] . " WHERE deleted = 0 AND appointment_date >= ? ORDER BY appointment_date ASC LIMIT 5");
-                                $stmt->execute([$now]);
-                                $upcoming = $stmt->fetchAll();
+                                $up_query = "SELECT * FROM " . $GLOBALS['appointment_table'] . " WHERE deleted = 0 AND appointment_date >= ? ORDER BY appointment_date ASC LIMIT 5";
+                                $upcoming = $bf->getQueryRecords($up_query, [$now]);
 
                                 if ($upcoming) {
                                     foreach ($upcoming as $appt) {

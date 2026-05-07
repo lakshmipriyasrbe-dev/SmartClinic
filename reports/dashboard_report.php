@@ -4,10 +4,10 @@ require_once('../common_file.php');
 
 class DashboardReport extends FPDF {
     function Header() {
-        global $con;
-        $stmt = $con->prepare("SELECT * FROM sc_company LIMIT 1");
-        $stmt->execute();
-        $company = $stmt->fetch();
+        global $con, $bf;
+        // Fetch company details
+        $company_res = $bf->getTableRecords('sc_company', '', '', 'id ASC LIMIT 1');
+        $company = $company_res[0] ?? null;
 
         $this->SetFont('Arial', 'B', 16);
         $this->Cell(0, 10, strtoupper($company['company_name'] ?? 'SMART CLINIC'), 0, 1, 'C');
@@ -38,9 +38,7 @@ $pdf->AddPage();
 $pdf->SetFont('Arial', '', 10);
 
 $now = date('Y-m-d H:i:s');
-$stmt = $con->prepare("SELECT * FROM " . $GLOBALS['appointment_table'] . " WHERE deleted = 0 AND appointment_date >= ? ORDER BY appointment_date ASC");
-$stmt->execute([$now]);
-$appointments = $stmt->fetchAll();
+$appointments = $bf->getQueryRecords("SELECT * FROM " . $GLOBALS['appointment_table'] . " WHERE deleted = 0 AND appointment_date >= ? ORDER BY appointment_date ASC", [$now]);
 
 foreach ($appointments as $appt) {
     $pdf->Cell(60, 8, $appt['patient_name'], 1);

@@ -104,6 +104,34 @@
             return $string;
         }
 
+        public function getTableRecords($table, $field = '', $value = '', $orderby = 'id DESC') {
+            $con = $this->con;
+            $sql = "SELECT * FROM $table WHERE deleted = ?";
+            $params = [0];
+            
+            if (!empty($field) && !empty($value)) {
+                $sql .= " AND $field = ?";
+                $params[] = $value;
+            }
+            
+            $sql .= " ORDER BY $orderby";
+            $stmt = $con->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll();
+        }
+
+        public function getQueryRecords($query, $params = []) {
+            $con = $this->con;
+            $stmt = $con->prepare($query);
+            $stmt->execute($params);
+            return $stmt->fetchAll();
+        }
+
+        public function getDbConfig() {
+            $db = new Database();
+            return $db->getDbConfig();
+        }
+
         public function add_log($table, $id, $query, $action) {
             $log_dir = __DIR__ . '/logs';
             if (!is_dir($log_dir)) {

@@ -98,28 +98,31 @@ function numberToWords($number) {
 $id = $_GET['id'] ?? '';
 if (empty($id)) die("Invalid Request");
 
-$stmt = $con->prepare("SELECT a.*, c.consultant_number FROM " . $GLOBALS['appointment_table'] . " a LEFT JOIN " . $GLOBALS['consultant_table'] . " c ON a.consultant_id = c.id WHERE a.appointment_id = ?");
-$stmt->execute([$id]);
-$appt = $stmt->fetch();
+// Fetch specific appointment details
+$rows = $bf->getTableRecords($GLOBALS['appointment_table'], 'appointment_id', $id);
+$appt = $rows[0] ?? null;
 
 if (!$appt) die("Appointment not found");
 
-// Fetch company details
-$stmt = $con->prepare("SELECT * FROM sc_company LIMIT 1");
-$stmt->execute();
-$company = $stmt->fetch();
+class PDF extends FPDF {
+    function Header() {
+        global $bf;
+        // Fetch company details
+        $company_res = $bf->getTableRecords('sc_company', '', '', 'id ASC LIMIT 1');
+        $company = $company_res[0] ?? null;
 
-$pdf = new FPDF('L', 'mm', 'A5');
+        $this->SetFont('Arial', 'B', 14);
+        $this->Cell(0, 10, strtoupper($company['company_name'] ?? 'SMART CLINIC'), 0, 1, 'C');
+        $this->SetFont('Arial', '', 9);
+        $this->Cell(0, 5, $company['company_address'] ?? 'Clinic Address', 0, 1, 'C');
+        $this->Ln(5);
+        $this->Line(10, 30, 200, 30);
+        $this->Ln(5);
+    }
+}
+
+$pdf = new PDF('L', 'mm', 'A5');
 $pdf->AddPage();
-
-// Header
-$pdf->SetFont('Arial', 'B', 14);
-$pdf->Cell(0, 10, strtoupper($company['company_name'] ?? 'SMART CLINIC'), 0, 1, 'C');
-$pdf->SetFont('Arial', '', 9);
-$pdf->Cell(0, 5, $company['company_address'] ?? 'Clinic Address', 0, 1, 'C');
-$pdf->Ln(5);
-$pdf->Line(10, 30, 200, 30);
-$pdf->Ln(5);
 
 $pdf->SetFont('Arial', 'B', 12);
 $pdf->Cell(0, 10, 'PAYMENT RECEIPT', 0, 1, 'C');

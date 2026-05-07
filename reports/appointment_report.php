@@ -6,9 +6,8 @@ class AppointmentReport extends FPDF {
     function Header() {
         global $con;
         // Fetch company details
-        $stmt = $con->prepare("SELECT * FROM sc_company LIMIT 1");
-        $stmt->execute();
-        $company = $stmt->fetch();
+        $company_res = $bf->getTableRecords('sc_company', '', '', 'id ASC LIMIT 1');
+        $company = $company_res[0] ?? null;
 
         $this->SetFont('Arial', 'B', 16);
         $this->Cell(0, 10, strtoupper($company['company_name'] ?? 'SMART CLINIC'), 0, 1, 'C');
@@ -41,9 +40,7 @@ $pdf->AliasNbPages();
 $pdf->AddPage();
 $pdf->SetFont('Arial', '', 10);
 
-$stmt = $con->prepare("SELECT * FROM " . $GLOBALS['appointment_table'] . " WHERE deleted = 0 ORDER BY appointment_date DESC");
-$stmt->execute();
-$appointments = $stmt->fetchAll();
+$appointments = $bf->getTableRecords($GLOBALS['appointment_table'], '', '', 'appointment_date DESC');
 
 foreach ($appointments as $appt) {
     $pdf->Cell(50, 8, $appt['patient_name'], 1);

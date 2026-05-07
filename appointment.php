@@ -142,9 +142,7 @@
                             </thead>
                             <tbody>
                                 <?php
-                                    $stmt = $con->prepare("SELECT * FROM " . $GLOBALS['appointment_table'] . " WHERE deleted = 0 ORDER BY appointment_date DESC");
-                                    $stmt->execute();
-                                    $appointments = $stmt->fetchAll();
+                                    $appointments = $bf->getTableRecords($GLOBALS['appointment_table'], '', '', 'appointment_date DESC');
                                     $now = date('Y-m-d H:i:s');
 
                                     if ($appointments) {

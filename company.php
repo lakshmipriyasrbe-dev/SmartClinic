@@ -12,9 +12,8 @@
     $company_address = "";
 
     if (!empty($edit_id)) {
-        $stmt = $con->prepare("SELECT * FROM " . $GLOBALS['company_table'] . " WHERE company_id = ? AND deleted = 0");
-        $stmt->execute([$edit_id]);
-        $row = $stmt->fetch();
+        $rows = $bf->getTableRecords($GLOBALS['company_table'], 'company_id', $edit_id);
+        $row = $rows[0] ?? null;
         if ($row) {
             $company_name = $row['company_name'];
             $company_email = $row['company_email'];
@@ -45,9 +44,8 @@
                 <div class="content-card">
                     <?php
                         $max_company = 1;
-                        $stmt_count = $con->prepare("SELECT COUNT(*) FROM " . $GLOBALS['company_table'] . " WHERE deleted = 0");
-                        $stmt_count->execute();
-                        $company_count = $stmt_count->fetchColumn();
+                        $companies_all = $bf->getTableRecords($GLOBALS['company_table']);
+                        $company_count = count($companies_all);
                         
                         $can_show_form = (empty($edit_id) && $company_count < $max_company) || !empty($edit_id);
                     ?>
@@ -108,9 +106,7 @@
                             </thead>
                             <tbody>
                                 <?php
-                                    $stmt = $con->prepare("SELECT * FROM " . $GLOBALS['company_table'] . " WHERE deleted = 0 ORDER BY id DESC");
-                                    $stmt->execute();
-                                    $companies = $stmt->fetchAll();
+                                    $companies = $bf->getTableRecords($GLOBALS['company_table']);
                                     if ($companies) {
                                         foreach ($companies as $comp) {
                                             echo "<tr>";

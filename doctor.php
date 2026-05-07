@@ -13,9 +13,8 @@
     $contact = "";
 
     if (!empty($edit_id)) {
-        $stmt = $con->prepare("SELECT * FROM " . $GLOBALS['consultant_table'] . " WHERE consultant_id = ? AND deleted = 0");
-        $stmt->execute([$edit_id]);
-        $row = $stmt->fetch();
+        $rows = $bf->getTableRecords($GLOBALS['consultant_table'], 'consultant_id', $edit_id);
+        $row = $rows[0] ?? null;
         if ($row) {
             $name = $row['consultan_name'];
             $specialization = $row['consultant_specification'];
@@ -99,9 +98,7 @@
                             </thead>
                             <tbody>
                                 <?php
-                                    $stmt = $con->prepare("SELECT * FROM " . $GLOBALS['consultant_table'] . " WHERE deleted = 0 ORDER BY id DESC");
-                                    $stmt->execute();
-                                    $doctors = $stmt->fetchAll();
+                                    $doctors = $bf->getTableRecords($GLOBALS['consultant_table']);
                                     if ($doctors) {
                                         foreach ($doctors as $doc) {
                                             echo "<tr>";
